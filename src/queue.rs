@@ -6,7 +6,7 @@ use std::sync::{Arc, Condvar, Mutex};
 /// This queue supports multiple producers and multiple consumers. Operations block
 /// when the queue is full (on `enqueue`) or empty (on `dequeue`) until progress is possible.
 ///
-/// ## Shutdown behavior
+/// # Shutdown behavior
 ///
 /// After `shutdown()` is called:
 /// - No new items will be enqueued.
@@ -16,7 +16,7 @@ use std::sync::{Arc, Condvar, Mutex};
 ///
 /// Internally uses a `Mutex` and two `Condvar`s to synchronize access.
 ///
-/// ## Example
+/// # Example
 ///
 /// ```
 /// use std::sync::Arc;
@@ -65,18 +65,18 @@ struct Inner<T> {
 impl<T> Queue<T> {
     /// Creates a new `Queue` with a fixed capacity.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `capacity` - Maximum number of elements the queue can hold.
     ///
-    /// ## Returns
+    /// # Returns
     ///
     /// A reference-counted pointer (`Arc`) to the new `Queue` instance.
     ///
-    /// ## Examples
+    /// # Examples
     ///
     /// ```
-    ///  use fifo_bounded_buffer::Queue;
+    /// use fifo_bounded_buffer::Queue;
     ///
     /// let queue = Queue::<usize>::new(10);
     /// ```
@@ -103,19 +103,19 @@ impl<T> Queue<T> {
     /// If the queue is shut down, the item will be silently dropped
     /// and enqueue will return early.
     ///
-    /// ## Arguments
+    /// # Arguments
     ///
     /// * `item` - The item to add to the queue.
     ///
-    /// ## Blocking
+    /// # Blocking
     ///
     /// - Blocks if the queue is full until space becomes available or shutdown occurs.
     ///
-    /// ## Panics
+    /// # Panics
     ///
     /// Panics if the thread is poisoned while waiting on the condition variable or mutex.
     ///
-    /// ## Example
+    /// # Example
     ///
     /// ```
     /// use std::sync::Arc;
@@ -140,20 +140,20 @@ impl<T> Queue<T> {
 
     /// Removes and returns an item from the front of the queue.
     ///
-    /// ## Returns
+    /// # Returns
     ///
     /// * `Some(item)` - if an item was dequeued.
     /// * `None` - if the queue is shut down and empty.
     ///
-    /// ## Blocking
+    /// # Blocking
     ///
     /// - Blocks if the queue is empty until an item is added or shutdown occurs.
     ///
-    /// ## Panics
+    /// # Panics
     ///
     /// Panics if the thread is poisoned while waiting on the condition variable or mutex.
     ///
-    /// ## Example
+    /// # Example
     /// ```
     /// use std::sync::Arc;
     /// use fifo_bounded_buffer::Queue;
@@ -183,7 +183,7 @@ impl<T> Queue<T> {
     /// - Consumers will continue to dequeue remaining items, but then receive `None`.
     /// - All condition variables are notified so blocked threads can exit.
     ///
-    /// ## Example
+    /// # Example
     ///
     /// ```
     /// use std::sync::Arc;
@@ -204,11 +204,11 @@ impl<T> Queue<T> {
 
     /// Checks if the queue is currently empty.
     ///
-    /// ## Returns
+    /// # Returns
     ///
     /// `true` if the queue has no items; `false` otherwise.
     ///
-    /// ## Example
+    /// # Example
     ///
     /// ```
     /// use std::sync::Arc;
@@ -227,11 +227,11 @@ impl<T> Queue<T> {
 
     /// Checks if the queue has been shut down.
     ///
-    /// ## Returns
+    /// # Returns
     ///
     /// `true` if shutdown has been initiated; `false` otherwise.
     ///
-    /// ## Example
+    /// # Example
     ///
     /// ```
     /// use std::sync::Arc;
