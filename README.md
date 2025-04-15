@@ -18,6 +18,29 @@ The `--force` option makes it update to the latest version of `cbindgen` if it i
 make build
 ```
 
+## Running
+
+To view the sample output:
+
+```bash
+make run
+```
+
+To run with your own settings:
+
+```console
+Usage: fifo_bounded_buffer [OPTIONS]
+
+Options:
+  -c <CONSUMERS>      Number of consumer threads [default: 1]
+  -p <PRODUCERS>      Number of producer threads [default: 1]
+  -i <ITEMS>          Total items to produce per thread [default: 10]
+  -s <SIZE>           Size of the queue [default: 5]
+  -d                  Introduce delay between enqueue/dequeue
+  -h, --help          Print help
+  -V, --version       Print version
+```
+
 ## Testing
 
 ```bash
