@@ -331,4 +331,92 @@ mod tests {
         assert!(queue.is_shutdown());
         assert!(queue.is_empty());
     }
+
+    #[test]
+    fn test_queue_enqueue_blocks_when_full() {
+        let queue = Arc::new(Queue::new(1));
+        queue.enqueue(1);
+
+        let q_clone = Arc::clone(&queue);
+        let handle = std::thread::spawn(move || {
+            // This should block until the item is dequeued
+            q_clone.enqueue(2);
+        });
+
+        std::thread::sleep(std::time::Duration::from_millis(100));
+        assert_eq!(queue.dequeue(), Some(1));
+        handle.join().unwrap();
+
+        assert_eq!(queue.dequeue(), Some(2));
+    }
+
+    #[test]
+    fn test_queue_dequeue_blocks_when_empty_then_returns() {
+        let queue = Arc::new(Queue::new(1));
+
+        let q_clone = Arc::clone(&queue);
+        let handle = std::thread::spawn(move || {
+            // This should block until an item is enqueued
+            q_clone.dequeue()
+        });
+
+        std::thread::sleep(std::time::Duration::from_millis(100));
+        queue.enqueue(42);
+        let result = handle.join().unwrap();
+
+        assert_eq!(result, Some(42));
+    }
+
+    #[test]
+    fn test_shutdown_unblocks_dequeue_and_returns_none() {
+        let queue = Arc::new(Queue::<usize>::new(1));
+
+        let q_clone = Arc::clone(&queue);
+        let handle = std::thread::spawn(move || {
+            // This should block until shutdown, then return None
+            q_clone.dequeue()
+        });
+
+        std::thread::sleep(std::time::Duration::from_millis(100));
+        queue.shutdown();
+
+        let result = handle.join().unwrap();
+        assert_eq!(result, None);
+    }
+
+    #[test]
+    fn test_enqueue_after_shutdown_does_nothing() {
+        let queue = Arc::new(Queue::new(2));
+        queue.enqueue(10);
+        queue.shutdown();
+
+        // This should silently do nothing
+        queue.enqueue(20);
+
+        let result = queue.dequeue();
+        assert_eq!(result, Some(10));
+
+        // There should be no second item
+        assert!(queue.dequeue().is_none());
+    }
+
+    #[test]
+    fn test_shutdown_multiple_times_does_not_panic() {
+        let queue = Queue::<usize>::new(1);
+        queue.shutdown();
+        queue.shutdown(); // Should not panic or deadlock
+        assert!(queue.is_shutdown());
+    }
+
+    #[test]
+    fn test_is_empty_considers_state_correctly() {
+        let queue = Queue::new(3);
+        assert!(queue.is_empty());
+
+        queue.enqueue(99);
+        assert!(!queue.is_empty());
+
+        let _ = queue.dequeue();
+        assert!(queue.is_empty());
+    }
 }

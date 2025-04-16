@@ -2,7 +2,7 @@ use fifo_bounded_buffer::Queue;
 use rand::Rng;
 use std::sync::Arc;
 use std::thread;
-use std::time::{Duration, Instant}; // Replace with your actual crate name
+use std::time::{Duration, Instant};
 
 const MAX_SLEEP_NS: u64 = 1_000_000;
 
